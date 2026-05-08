@@ -23,7 +23,6 @@
     "minecraft.MixinDamageSource",
     "minecraft.MixinLivingEntity",
     "minecraft.MixinMinecraftServer",
-    "minecraft.MixinMobEffectInstance",
     "tacz.EntityKineticBulletAccessor",
     "tacz.MixinAbstractGunItem",
     "tacz.MixinEntityKineticBullet",

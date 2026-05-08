@@ -155,14 +155,17 @@ abstract class MixinLivingEntity extends Entity implements
             method = "aiStep",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;serverAiStep()V"))
     private void disableAiWhenUnbalancing(LivingEntity receiver, Operation<Void> original) {
-        if ((Object) this instanceof Player) {
+        if (receiver instanceof Player) {
             original.call(receiver);
             return;
         }
         if (PostureSystem.isPostureBroken(receiver)) {
-            noJumpDelay = Math.max(noJumpDelay, 5);
-            xxa = zza = 0;
-            if ((Object) this instanceof Mob mob) {
+            // 用 shadow 的话 refmap 会犯病
+            // 所以用 accessor
+            var accessor = (LivingEntityAccessor) receiver;
+            accessor.setNoJumpDelay(Math.max(accessor.getNoJumpDelay(), 5));
+            receiver.xxa = receiver.zza = 0;
+            if (receiver instanceof Mob mob) {
                 mob.getNavigation().stop();
             }
         } else {
@@ -204,8 +207,4 @@ abstract class MixinLivingEntity extends Entity implements
     public void amr$setStartRecoverPostureTime(long value) {
         amr$startRecoverPostureTime = value;
     }
-
-    @Shadow private int noJumpDelay;
-    @Shadow public float xxa;
-    @Shadow public float zza;
 }
