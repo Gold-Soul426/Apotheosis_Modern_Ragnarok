@@ -12,7 +12,7 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '[6.0.53,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'maven-publish'
 }
@@ -311,6 +311,7 @@ tasks.named('jar', Jar).configure {
 jarJar.enable()
 tasks.named('jarJar') {
     archiveClassifier = ''
+    finalizedBy 'reobfJarJar'
 }
 
 tasks.withType(JavaCompile).configureEach {
