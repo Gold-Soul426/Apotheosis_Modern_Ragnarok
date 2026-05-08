@@ -41,7 +41,6 @@ import java.util.stream.StreamSupport;
  * <p>
  * 类型名 apotheosis_modern_ragnarok:armor_squash
  * 实例名 apotheosis_modern_ragnarok:armor_squash
- * <p/>
  */
 @Mod.EventBusSubscriber
 public class ArmorSquashAffix extends AbstractValuedAffix implements GunAffix {

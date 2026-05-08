@@ -69,7 +69,7 @@ public class SurvivalInstinctEnchantment extends Enchantment {
     }
 
     /**
-     * 降低弹匣容量<=5的重型武器的子弹掉率
+     * 降低弹匣容量小于等于 5 的重型武器的子弹掉率
      * @param gun 武器的信息
      * @return 掉率的倍率
      */
