@@ -1,5 +1,6 @@
 package mod.chloeprime.apotheosismodernragnarok.common.mob_effects;
 
+import com.google.common.collect.MapMaker; // 【新增导入】Guava 并发 Map 构建器
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.EntityKillByGunEvent;
 import com.tacz.guns.api.event.common.GunShootEvent;
@@ -27,7 +28,7 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.WeakHashMap;
+// import java.util.WeakHashMap; // 【移除】致命的非线程安全类
 
 /**
  * 提升爆头倍率，
@@ -87,21 +88,42 @@ public class VerdantRuinEffect extends MobEffect {
     }
 
     // MC1.21.1: Replace with data attachment
-    private static final Set<Entity> PROCESSED_BULLETS = Collections.newSetFromMap(new WeakHashMap<>());
+    // 【核心修改点 1】：使用 Guava 的 MapMaker 替换原生 WeakHashMap。
+    // weakKeys() 保证实体卸载时不会内存泄漏（且底层契约基于 == 比较，完美符合子弹实体的判断逻辑）。
+    // concurrencyLevel(4) 为高射速并发场景提供底层的分段锁支持。
+    private static final Set<Entity> PROCESSED_BULLETS = Collections.newSetFromMap(
+            new MapMaker().weakKeys().concurrencyLevel(4).makeMap()
+    );
 
     public void onGunshotPost(@Nullable LivingEntity shooter, Entity bullet, boolean isHeadshot) {
-        if (bullet != null) {
-            PROCESSED_BULLETS.add(bullet);
-        }
-        if (shooter == null || isHeadshot) {
+        // 基础判空
+        if (shooter == null) {
             return;
         }
+
+        // 【核心修改点 2】：逻辑前置。
+        // 在进行任何集合操作前，先检查射击者是否拥有该 Buff！
+        // 这意味着服务器中 99% 的普通射击（无 Buff 状态）都会在这里被直接拦截，
+        // 从而彻底杜绝了无效子弹涌入 Map 造成的性能浪费和死锁风险。
         var instance = shooter.getEffect(this);
         if (instance == null) {
             return;
         }
+
+        // 确认玩家拥有 Buff 后，再将子弹加入安全的并发集合中记录
+        if (bullet != null) {
+            PROCESSED_BULLETS.add(bullet);
+        }
+        
+        // 爆头免除惩罚
+        if (isHeadshot) {
+            return;
+        }
+
+        // --- 以下原作者的惩罚逻辑保持完全不变 ---
         // 没有爆头时移除本效果
         shooter.removeEffect(this);
+        
         // 惩罚性伤害
         var level = instance.getAmplifier() + 1;
         if (level < DEFAULT_MAX_LEVEL / 2) {
