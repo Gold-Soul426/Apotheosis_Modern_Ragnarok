@@ -1,0 +1,35 @@
+name: Build Mod (Java 17 Gradle)
+
+on:
+  workflow_dispatch: # 允许手动点击按钮运行
+  push:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # 1. 获取你的源码
+    - uses: actions/checkout@v3
+
+    # 2. 强制使用 Java 17 环境（精准解决版本报错）
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # 3. 赋予 gradlew 执行权限
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    # 4. 无视证书拦截并执行构建
+    - name: Build with Gradle
+      run: ./gradlew build -Dnet.minecraftforge.gradle.check.certs=false --no-daemon
+
+    # 5. 将编译好的 .jar 文件打包提供给你下载
+    - name: Upload Mod Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Apotheosis-Ragnarok-Fixed-Mod
+        path: build/libs/*.jar
