@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
+        distribution: 'zulu'
 
     # 3. 赋予 gradlew 执行权限
     - name: Grant execute permission for gradlew
