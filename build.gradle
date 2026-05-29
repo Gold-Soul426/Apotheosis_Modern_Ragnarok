@@ -128,7 +128,7 @@ minecraft {
         server {
             workingDirectory project.file('run-server')
             property 'forge.enabledGameTestNamespaces', mod_id
-//            args '--nogui'
+//          args '--nogui'
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
@@ -222,14 +222,14 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-//    implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
-//    implementation("com.eliotlash.mclib:mclib:20")
+//  implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
+//  implementation("com.eliotlash.mclib:mclib:20")
 
     // 神化
     implementation fg.deobf("dev.shadowsoffire:Apotheosis:${minecraft_version}-${apoth_version}")
     implementation fg.deobf("dev.shadowsoffire:ApothicAttributes:${minecraft_version}-${apoth_attributes_version}")
     implementation fg.deobf("dev.shadowsoffire:Placebo:${minecraft_version}-${placebo_version}")
-//    runtimeOnly fg.deobf("maven.modrinth:mmmmmmmmmmmm:kDOX4QqW")
+//  runtimeOnly fg.deobf("maven.modrinth:mmmmmmmmmmmm:kDOX4QqW")
 
     // TaCZ
     if (USE_LOCAL_TACZ_V) {
@@ -287,7 +287,8 @@ tasks.named('processResources', ProcessResources).configure {
 
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
-    }}
+    }
+}
 
 // Example for how to get properties into the manifest for reading at runtime.
 tasks.named('jar', Jar).configure {
@@ -321,6 +322,7 @@ tasks.withType(JavaCompile).configureEach {
 tasks.withType(GenerateModuleMetadata) {
     enabled = false
 }
+
 publishing {
     repositories {
         maven {
@@ -328,7 +330,6 @@ publishing {
             url = isRelease
                     ? "https://maven.chloeprime.cn:4080/releases/"
                     : "https://maven.chloeprime.cn:4080/snapshots/"
-        }
         }
     }
     publications {
