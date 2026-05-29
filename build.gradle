@@ -328,10 +328,7 @@ publishing {
             url = isRelease
                     ? "https://maven.chloeprime.cn:4080/releases/"
                     : "https://maven.chloeprime.cn:4080/snapshots/"
-            credentials {
-                username "$CHLOE_MAVEN_USERNAME"
-                password "$CHLOE_MAVEN_PASSWORD"
-            }
+        }
         }
     }
     publications {
