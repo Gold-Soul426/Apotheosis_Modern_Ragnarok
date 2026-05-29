@@ -9,25 +9,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    # 1. 获取你的源码 (升级到 v4)
+    # 1. 获取代码
     - uses: actions/checkout@v4
 
-    # 2. 强制使用 Java 17 环境 (升级到 v4，并使用 zulu 避开服务器宕机)
+    # 2. 强制使用 Java 17 与 Zulu
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'zulu'
 
-    # 3. 赋予 gradlew 执行权限
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    # 3. 【核心修复】召唤官方 Gradle 环境，彻底抛弃缺失的 gradlew
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.1.1'
 
-    # 4. 无视证书拦截并执行构建
+    # 4. 直接使用原生 gradle 命令进行编译
     - name: Build with Gradle
-      run: ./gradlew build -Dnet.minecraftforge.gradle.check.certs=false --no-daemon
+      run: gradle build -Dnet.minecraftforge.gradle.check.certs=false --no-daemon
 
-    # 5. 将编译好的 .jar 文件打包提供给你下载 (升级到 v4)
+    # 5. 上传最终的 .jar 文件供你下载
     - name: Upload Mod Artifact
       uses: actions/upload-artifact@v4
       with:
